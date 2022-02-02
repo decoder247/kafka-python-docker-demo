@@ -1,0 +1,24 @@
+version: '2'
+# Allows for multiple broker by 
+# docker-compose up --scale kafka=3
+# Use docker ps -a to see which ports assigned
+# Scale can also be used here as a parameter, i.e. scale: 3
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    restart: unless-stopped
+
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092"
+    environment:
+      DOCKER_API_VERSION: 1.22
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.99.100
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      # necessary to run docker w/in container, i.e. for KAFKA_ADVERTISED_PORT param (https://github.com/wurstmeister/kafka-docker/wiki)
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
